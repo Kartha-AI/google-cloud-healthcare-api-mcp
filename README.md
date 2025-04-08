@@ -13,9 +13,6 @@ The maion differnce is that this repo talks to Google Cloud Healthcare FHIR APIs
 - Claude: demo/claude-demo.mp4
 - Goose: demo/goose-demo.mp4
 
-- <video src="demo/goose-demo.mp4" width="500px">Goose</video>
-- <video src="demo/claude-demo.mp4" width="500px">Calude</video>
-
 ## Screenshots
 <img src="screenshots/goose/goose-auth.png" alt="Auth" width="700">
 <img src="screenshots/goose/goose-patient.png" alt="Patient" width="700">
