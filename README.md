@@ -1,6 +1,6 @@
-# An MCP Server for [Google Cloud Healthcare API](https://cloud.google.com/healthcare-api)
+# An MCP Server for Google Cloud Healthcare API (FHIR)
 
-A Model Context Protocol (MCP) server that provides healthcare tools for interacting with FHIR resources on Google Cloud Healthcare API and public medical research APIs like pubmed, using MCP clients like Claude and Goose.
+A Model Context Protocol (MCP) server that provides healthcare tools for interacting with FHIR resources on [Google Cloud Healthcare API](https://cloud.google.com/healthcare-api) and public medical research APIs like pubmed, using MCP clients like Claude and Goose.
 
 This is a slightly modified version for AgentCare MCP Server for EHRs. https://github.com/Kartha-AI/agentcare-mcp
 
@@ -10,8 +10,11 @@ The maion differnce is that this repo talks to Google Cloud Healthcare FHIR APIs
 <img src="screenshots/architecture.png" alt="Architecture" width="700">
 
 ## Demo
-Claude: demo/claude-demo.mp4
-Goose: demo/goose-demo.mp4
+- Claude: demo/claude-demo.mp4
+- Goose: demo/goose-demo.mp4
+
+- <video src="demo/goose-demo.mp4" width="500px">Goose</video>
+- <video src="demo/claude-demo.mp4" width="500px">Calude</video>
 
 ## Screenshots
 <img src="screenshots/goose/goose-auth.png" alt="Auth" width="700">
