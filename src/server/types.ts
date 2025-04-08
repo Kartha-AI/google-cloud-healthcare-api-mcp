@@ -1,0 +1,13 @@
+export type ResourceType = 
+  | 'Patient' 
+  | 'Observation' 
+  | 'Condition' 
+  | 'MedicationRequest' 
+  | 'Encounter' 
+  | 'CarePlan' 
+  | 'AllergyIntolerance' 
+  | 'CareTeam' 
+  | 'Procedure'
+  | 'Appointment'
+  | 'Medication'
+  | 'CacheConfig'

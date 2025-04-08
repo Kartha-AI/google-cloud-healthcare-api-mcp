@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentCare AI - Authentication</title>
+    
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- FirebaseUI -->
+    <script src="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js"></script>
+    
+    <!-- FirebaseUI CSS -->
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css" />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-color: #4285F4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+            box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
+        }
+        
+        h1 {
+            margin: 0;
+            font-weight: 600;
+            color: #212529;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            color: #6c757d;
+            padding-left: 65px;
+            font-size: 16px;
+        }
+        
+        .subtitle .google-icon {
+            color: #4285F4;
+            margin-right: 6px;
+            font-size: 20px;
+            vertical-align: bottom;
+        }
+        
+        #loader {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        .user-info {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            display: none;
+            background-color: #f8f9fa;
+        }
+        
+        .user-info p {
+            margin: 10px 0;
+        }
+        
+        .tenant-info {
+            background-color: #e8f5ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4285F4;
+            font-size: 14px;
+        }
+        
+        .signout-btn {
+            display: block;
+            margin: 25px auto 0;
+            padding: 12px 24px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+        }
+        
+        .signout-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .token-section {
+            margin-top: 25px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+        }
+        
+        .token-section h3 {
+            margin-top: 0;
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        .token-display {
+            padding: 15px;
+            background-color: #f1f3f5;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            margin-bottom: 15px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+        
+        .copy-btn {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(66, 133, 244, 0.2);
+            flex: 1;
+            min-width: 120px;
+            white-space: nowrap;
+        }
+        
+        .copy-btn:hover {
+            background-color: #3367d6;
+        }
+        
+        .success-notification {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .success-status {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .error-status {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .close-btn {
+            display: none;
+            margin: 25px auto 0;
+            padding: 12px 24px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(66, 133, 244, 0.2);
+        }
+
+        .close-btn:hover {
+            background-color: #3367d6;
+        }
+        
+        /* Custom FirebaseUI styling */
+        .firebaseui-container {
+            max-width: 100%;
+        }
+        
+        .firebaseui-card-content {
+            padding: 0;
+        }
+        
+        .firebaseui-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            color: #212529;
+        }
+        
+        .firebaseui-subtitle {
+            font-family: 'Poppins', sans-serif;
+            color: #6c757d;
+        }
+        
+        .firebaseui-label {
+            font-family: 'Poppins', sans-serif;
+            color: #495057;
+        }
+        
+        .firebaseui-input {
+            font-family: 'Poppins', sans-serif;
+            padding: 12px !important;
+            border-radius: 6px !important;
+            border: 1px solid #ced4da !important;
+            transition: border-color 0.2s !important;
+        }
+        
+        .firebaseui-input:focus {
+            border-color: #4285F4 !important;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2) !important;
+        }
+        
+        .firebaseui-id-submit.firebaseui-button {
+            background-color: #4285F4 !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 500 !important;
+            text-transform: none !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 5px rgba(66, 133, 244, 0.2) !important;
+            transition: background-color 0.2s !important;
+        }
+        
+        .firebaseui-id-submit.firebaseui-button:hover {
+            background-color: #3367d6 !important;
+        }
+        
+        .firebaseui-id-secondary-link.firebaseui-button {
+            color: #4285F4 !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+        
+        .mdl-button--raised.mdl-button--colored.firebaseui-button {
+            background-color: #4285F4 !important;
+        }
+        
+        .mdl-button--primary.firebaseui-button {
+            color: #4285F4 !important;
+        }
+        
+        .firebaseui-error {
+            color: #dc3545 !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-size: 13px !important;
+        }
+        
+        .firebaseui-text {
+            font-family: 'Poppins', sans-serif !important;
+            color: #495057 !important;
+        }
+        
+        .mdl-card {
+            border-radius: 12px !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">AC</div>
+            <h1>AgentCare AI</h1>
+        </div>
+        <div class="subtitle">
+            <span class="material-icons google-icon">cloud</span>
+            Google Cloud Healthcare API
+        </div>
+        
+        <!-- Container for the FirebaseUI authentication -->
+        <div id="firebaseui-auth-container"></div>
+        
+        <!-- Loading indicator -->
+        <div id="loader">Loading...</div>
+        
+        <!-- Status message display -->
+        <div id="status-message" class="status-message" style="display: none;"></div>
+        
+        <!-- User info will be shown here after login -->
+        <div id="user-info" class="user-info">
+            <p><strong>User ID:</strong> <span id="user-id"></span></p>
+            <!-- <p><strong>Name:</strong> <span id="user-name"></span></p> -->
+            <p><strong>Email:</strong> <span id="user-email"></span></p>
+            
+            <div class="token-section">
+                <h3>Authentication Token</h3>
+                <p class="token-display" id="token-display">No token available</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                    <button id="copy-token-btn" class="copy-btn">Copy Token</button>
+                    <button id="copy-full-token-btn" class="copy-btn">Copy Full Object</button>
+                    <button id="manually-send-token-btn" class="copy-btn">Send Token to App</button>
+                </div>
+                <div id="copy-success" class="success-notification">Copied to clipboard!</div>
+            </div>
+            
+            <button id="signout-btn" class="signout-btn">Sign Out</button>
+        </div>
+
+        <!-- Close window button -->
+        <button id="close-window-btn" class="close-btn">Close Window</button>
+    </div>
+    
+    <script>
+       
+        // Firebase Configuration will be injected here
+        /* FIREBASE_CONFIG */
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Get the Auth instance and set tenant ID
+        const auth = firebase.auth();
+        auth.tenantId = TENANT_ID;
+
+        // Initialize the FirebaseUI Widget
+        const ui = new firebaseui.auth.AuthUI(auth);
+
+        // Track the auth state to avoid duplicate initializations
+        let uiStarted = false;
+
+        // Store the token object
+        let currentToken = null;
+
+        // Configure the FirebaseUI Widget
+        const uiConfig = {
+            signInSuccessUrl: null,
+            signInSuccessUrl: 'http://localhost:3000/firebase-auth/callback',
+            signInFlow: 'redirect',
+            //signInFlow: 'popup',
+            tenantId: TENANT_ID,
+            signInOptions: [
+                {
+                    provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                    requireDisplayName: false,
+                    signInMethod: firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD,
+                    displayName: 'Email',
+                    displayMode: 'emailSignIn'
+                }
+            ],
+            credentialHelper: firebaseui.auth.CredentialHelper.NONE,
+            callbacks: {
+                signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+                    // User successfully signed in
+                    const user = authResult.user;
+                    
+                    // Get token
+                    user.getIdToken().then(token => {
+                        // Create token object
+                        const tokenData = {
+                            uid: user.uid,
+                            email: user.email,
+                            access_token: token,
+                            expires_at: new Date(Date.now() + 3600 * 1000).toISOString()
+                        };
+        
+                        // Encode token data
+                        const encodedToken = encodeURIComponent(JSON.stringify(tokenData));
+
+                        const callbackPort = Number(firebaseConfig.callbackPort);
+                        
+                        // Redirect to your custom URL scheme with the token
+                        window.location.href = `http://localhost:${callbackPort}/firebase-auth/callback?token=${encodedToken}&state=${STATE}`;
+                    });
+                    
+                    // Return false to avoid auto redirection
+                    return false;
+                },
+                uiShown: function() {
+                    // Hide loader when widget is displayed
+                    document.getElementById('loader').style.display = 'none';
+                }
+            }
+        };
+
+        // Function to show status message
+        function showStatus(message, isSuccess) {
+            const statusElement = document.getElementById('status-message');
+            statusElement.textContent = message;
+            statusElement.className = isSuccess ? 
+                'status-message success-status' : 
+                'status-message error-status';
+            statusElement.style.display = 'block';
+
+            // If it's a success message, show the close button
+            if (isSuccess) {
+                document.getElementById('close-window-btn').style.display = 'block';
+            }
+        }
+
+        // Function to display user information and get token
+        function displayUserInfo(user) {
+            if (user) {
+                // User is signed in, show user info
+                document.getElementById('user-id').textContent = user.uid;
+                // document.getElementById('user-name').textContent = user.displayName || 'Not provided';
+                document.getElementById('user-email').textContent = user.email;
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('firebaseui-auth-container').style.display = 'none';
+
+                // Get and display token
+                user.getIdToken().then(token => {
+                    // Create token object with expiration time (1 hour)
+                    currentToken = {
+                        uid: user.uid,
+                        displayName: user.displayName,
+                        email: user.email,
+                        access_token: token,
+                        expires_at: new Date(Date.now() + 3600 * 1000).toISOString()
+                    };
+                    
+                    // Display a shortened version of the token
+                    document.getElementById('token-display').textContent = 
+                        token.substring(0, 30) + '...' + token.substring(token.length - 10);
+                    
+                    // Try to automatically send token to parent window
+                    if (!sendTokenToOpener()) {
+                        // console.log('Automatic token sending failed. Manual options available.');
+                    }
+                }).catch(error => {
+                    // console.error('Error getting token:', error);
+                    showStatus('Error getting token: ' + error.message, false);
+                });
+                
+                // Also get custom claims if needed
+                user.getIdTokenResult().then(idTokenResult => {
+                    // console.log("Custom Claims:", idTokenResult.claims);
+                });
+            } else {
+                // User is signed out, show sign-in UI
+                document.getElementById('user-info').style.display = 'none';
+                document.getElementById('firebaseui-auth-container').style.display = 'block';
+                document.getElementById('token-display').textContent = 'No token available';
+                document.getElementById('status-message').style.display = 'none';
+                document.getElementById('close-window-btn').style.display = 'none';
+                currentToken = null;
+                
+                // Only start UI if it hasn't been started
+                if (!uiStarted) {
+                    // Reset UI instance to ensure we get a fresh sign-in screen
+                    ui.reset();
+                    // Start the FirebaseUI auth flow
+                    ui.start('#firebaseui-auth-container', uiConfig);
+                    uiStarted = true;
+                }
+            }
+        }
+
+        // Set up copy token button
+        document.getElementById('copy-token-btn').addEventListener('click', function() {
+            if (currentToken && currentToken.access_token) {
+                navigator.clipboard.writeText(currentToken.access_token)
+                    .then(() => showCopySuccess())
+                    // .catch(err => console.error('Failed to copy token: ', err));
+            }
+        });
+
+        // Set up copy full token object button
+        document.getElementById('copy-full-token-btn').addEventListener('click', function() {
+            if (currentToken) {
+                navigator.clipboard.writeText(JSON.stringify(currentToken))
+                    .then(() => showCopySuccess())
+                    // .catch(err => console.error('Failed to copy token object: ', err));
+            }
+        });
+
+        // Set up manually send token button (implementing missing function)
+        document.getElementById('manually-send-token-btn').addEventListener('click', function() {
+            if (currentToken) {
+                sendTokenToOpener();
+            }
+        });
+
+        // Function to send token to opener window
+        function sendTokenToOpener() {
+            try {
+                if (window.opener && !window.opener.closed && currentToken) {
+                    const tokenData = {
+                        uid: currentToken.uid,
+                        email: currentToken.email,
+                        access_token: currentToken.access_token,
+                        expires_at: currentToken.expires_at
+                    };
+                    
+                    window.opener.postMessage({
+                        type: 'FIREBASE_AUTH_TOKEN',
+                        token: tokenData
+                    }, '*');
+                    
+                    showStatus('Token sent successfully!', true);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                showStatus('Failed to send token: ' + error.message, false);
+                return false;
+            }
+        }
+
+        // Set up close window button
+        document.getElementById('close-window-btn').addEventListener('click', function() {
+            window.close();
+        });
+
+        // Function to show copy success notification
+        function showCopySuccess() {
+            const notification = document.getElementById('copy-success');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Set up sign out button
+        document.getElementById('signout-btn').addEventListener('click', function() {
+            auth.signOut().then(function() {
+                // console.log('Signed out successfully');
+                document.getElementById('loader').style.display = 'block';
+            }).catch(function(error) {
+                // console.error('Sign out error:', error);
+            });
+        });
+
+        // Listen for auth state changes
+        auth.onAuthStateChanged(function(user) {
+            displayUserInfo(user);
+            
+            // Reset UI started flag when user signs out
+            if (!user) {
+                uiStarted = false;
+            }
+        });
+
+        // Initialize UI when the page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            // Display loader until UI is rendered
+            document.getElementById('loader').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
