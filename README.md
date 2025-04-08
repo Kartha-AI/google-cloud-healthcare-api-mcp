@@ -68,15 +68,7 @@ macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
 
 {
   "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/your-username/Desktop"
-      ]
-    },
-    "agent-care": {
+    "google-cloud-healthcare-api-mcp": {
       "command": "node",
       "args": [
         "/Users/your-username/{google-cloud-healthcare-api-mcp dir}/build/index.js"
@@ -102,8 +94,8 @@ macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
 
 ## Start MCP Server Locally with MCP Inspector
 ````
-git clone {google-cloud-healthcare-api-mcp  path}
-cd agentcare-mcp
+git clone git@github.com:Kartha-AI/google-cloud-healthcare-api-mcp.git
+cd google-cloud-healthcare-api-mcp
 npm install
 npm run build
 npm install -g @modelcontextprotocol/inspector
