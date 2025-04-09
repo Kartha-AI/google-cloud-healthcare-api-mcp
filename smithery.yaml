@@ -1,0 +1,103 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - FIREBASE_API_KEY
+      - FIREBASE_AUTH_DOMAIN
+      - FIREBASE_PROJECT_ID
+      - FIREBASE_STORAGE_BUCKET
+      - FIREBASE_MESSAGING_SENDER_ID
+      - FIREBASE_APP_ID
+      - FIREBASE_MEASUREMENT_ID
+      - FIREBASE_AUTH_CALLBACK_PORT
+      - FHIR_BASE_URL
+      - PUBMED_API_KEY
+      - CLINICAL_TRIALS_API_KEY
+      - FDA_API_KEY
+    properties:
+      FIREBASE_API_KEY:
+        type: string
+        default: dummy
+        description: Firebase API key
+      FIREBASE_AUTH_DOMAIN:
+        type: string
+        default: dummy
+        description: Firebase Auth Domain
+      FIREBASE_PROJECT_ID:
+        type: string
+        default: dummy
+        description: Firebase Project ID
+      FIREBASE_STORAGE_BUCKET:
+        type: string
+        default: dummy
+        description: Firebase Storage Bucket
+      FIREBASE_MESSAGING_SENDER_ID:
+        type: string
+        default: dummy
+        description: Firebase Messaging Sender ID
+      FIREBASE_APP_ID:
+        type: string
+        default: dummy
+        description: Firebase App ID
+      FIREBASE_MEASUREMENT_ID:
+        type: string
+        default: dummy
+        description: Firebase Measurement ID
+      FIREBASE_AUTH_CALLBACK_PORT:
+        type: string
+        default: "3456"
+        description: Port for Firebase Auth callback
+      FHIR_BASE_URL:
+        type: string
+        default: http://localhost:8080/fhir
+        description: FHIR Gateway base URL
+      PUBMED_API_KEY:
+        type: string
+        default: dummy
+        description: PubMed API key
+      CLINICAL_TRIALS_API_KEY:
+        type: string
+        default: dummy
+        description: Clinical Trials API key
+      FDA_API_KEY:
+        type: string
+        default: dummy
+        description: FDA API key
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'node',
+      args: ['build/index.js'],
+      env: {
+        FIREBASE_API_KEY: config.FIREBASE_API_KEY,
+        FIREBASE_AUTH_DOMAIN: config.FIREBASE_AUTH_DOMAIN,
+        FIREBASE_PROJECT_ID: config.FIREBASE_PROJECT_ID,
+        FIREBASE_STORAGE_BUCKET: config.FIREBASE_STORAGE_BUCKET,
+        FIREBASE_MESSAGING_SENDER_ID: config.FIREBASE_MESSAGING_SENDER_ID,
+        FIREBASE_APP_ID: config.FIREBASE_APP_ID,
+        FIREBASE_MEASUREMENT_ID: config.FIREBASE_MEASUREMENT_ID,
+        FIREBASE_AUTH_CALLBACK_PORT: config.FIREBASE_AUTH_CALLBACK_PORT,
+        FHIR_BASE_URL: config.FHIR_BASE_URL,
+        PUBMED_API_KEY: config.PUBMED_API_KEY,
+        CLINICAL_TRIALS_API_KEY: config.CLINICAL_TRIALS_API_KEY,
+        FDA_API_KEY: config.FDA_API_KEY
+      }
+    })
+  exampleConfig:
+    FIREBASE_API_KEY: dummy-api-key
+    FIREBASE_AUTH_DOMAIN: dummy-auth-domain.firebaseapp.com
+    FIREBASE_PROJECT_ID: dummy-project-id
+    FIREBASE_STORAGE_BUCKET: dummy-storage-bucket.appspot.com
+    FIREBASE_MESSAGING_SENDER_ID: "1234567890"
+    FIREBASE_APP_ID: 1:1234567890:web:abcdef123456
+    FIREBASE_MEASUREMENT_ID: G-ABCDEFGH
+    FIREBASE_AUTH_CALLBACK_PORT: "3456"
+    FHIR_BASE_URL: http://localhost:8080/fhir
+    PUBMED_API_KEY: dummy-pubmed-key
+    CLINICAL_TRIALS_API_KEY: dummy-clinical-trials-key
+    FDA_API_KEY: dummy-fda-key
