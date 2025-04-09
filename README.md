@@ -1,5 +1,7 @@
 # An MCP Server for Google Cloud Healthcare API (FHIR)
 
+[![smithery badge](https://smithery.ai/badge/@Kartha-AI/google-cloud-healthcare-api-mcp)](https://smithery.ai/server/@Kartha-AI/google-cloud-healthcare-api-mcp)
+
 A Model Context Protocol (MCP) server that provides healthcare tools for interacting with FHIR resources on [Google Cloud Healthcare API](https://cloud.google.com/healthcare-api) and public medical research APIs like pubmed, using MCP clients like Claude and Goose.
 
 This is a slightly modified version for AgentCare MCP Server for EHRs. https://github.com/Kartha-AI/agentcare-mcp
@@ -91,6 +93,14 @@ macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
   }
 }
 ````
+
+### Installing via Smithery
+
+To install google-cloud-healthcare-api-mcp for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@Kartha-AI/google-cloud-healthcare-api-mcp):
+
+```bash
+npx -y @smithery/cli install @Kartha-AI/google-cloud-healthcare-api-mcp --client claude
+```
 
 ## Start MCP Server Locally with MCP Inspector
 ````
