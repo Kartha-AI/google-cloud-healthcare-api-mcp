@@ -63,7 +63,7 @@ Each tool  requires specific parameters:
 refer to: /src/server/constants/tools.ts for tools specirfication
 
 ## Use with claude desktop
-````
+```
 for claude desktop: 
 macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
 (use the env variables as shown above)
@@ -92,7 +92,7 @@ macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
     }
   }
 }
-````
+```
 
 ### Installing via Smithery
 
@@ -103,7 +103,7 @@ npx -y @smithery/cli install @Kartha-AI/google-cloud-healthcare-api-mcp --client
 ```
 
 ## Start MCP Server Locally with MCP Inspector
-````
+```
 git clone git@github.com:Kartha-AI/google-cloud-healthcare-api-mcp.git
 cd google-cloud-healthcare-api-mcp
 npm install
@@ -112,10 +112,10 @@ npm install -g @modelcontextprotocol/inspector
 mcp-inspector  build/index.js
 http://localhost:5173
 Set up the env vars on Inspector
-````
+```
 
 ## Troubleshooting:
 If Claude desktop is running it uses port 3456 for Auth. You need to terminate that process using the following command:
-````
+```
 kill -9 $(lsof -t -i:3456)
-````
+```

@@ -40,9 +40,10 @@ export class ToolHandler {
 
   private handleCall = async (request: any) => {
     if(request.params?.name != "find_patient" && request.params?.name != "get-drug"
-      && request.params?.name != "search-trials" && request.params?.name != "search-pubmed") 
+      && request.params?.name != "search-trials" && request.params?.name != "search-pubmed"
+      && request.params?.name != "get_binary_resource") 
      { 
-      if (!request.params?.arguments?.patientId) {
+      if (!request.params?.arguments?.patientId && request.params?.name != "get_binary_resource") {
         throw new McpError(ErrorCode.InvalidParams, "patientId is required");
       }
     }
@@ -94,6 +95,10 @@ export class ToolHandler {
           return await this.trialsApi.getTrials(request.params.arguments,this.cache);
         case "get-drug-info":
           return await this.fdaApi.getDrug(request.params.arguments,this.cache);
+        case "get_patient_documents":
+          return await this.fhirClient.getPatientDocumentReferences(request.params.arguments);
+        case "get_binary_resource":
+          return await this.fhirClient.getBinaryResource(request.params.arguments);
         default:
           throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
       }

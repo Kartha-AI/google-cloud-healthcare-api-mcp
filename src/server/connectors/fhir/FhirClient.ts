@@ -234,6 +234,122 @@ export class FhirClient {
     return this.formatResponse(`fhir://Patient/${args.patientId}/appointments`, response.data);
   }
 
+  async getPatientDocumentReferences(args: any) {
+    const params = new URLSearchParams();
+    params.append('patient', `${args.patientId}`);
+    if (args.type) params.append('type', args.type);
+    if (args.category) params.append('category', args.category);
+    if (args.status) params.append('status', args.status);
+    if (args.dateFrom) params.append('date', `ge${args.dateFrom}`);
+    if (args.dateTo) params.append('date', `le${args.dateTo}`);
+
+    const response = await this.client.get(`/DocumentReference?${params}`);
+    
+    // If we have document references, fetch and decode their content
+    if (response.data?.entry?.length > 0) {
+      const documentsWithContent = await Promise.all(
+        response.data.entry.map(async (entry: any) => {
+          const docRef = entry.resource;
+          const processedDoc = { ...docRef, decodedContent: [] };
+          
+          // Process each content attachment
+          if (docRef.content?.length > 0) {
+            for (const content of docRef.content) {
+              const attachment = content.attachment;
+              
+              if (attachment?.data) {
+                // Inline base64 data
+                try {
+                  const decodedData = Buffer.from(attachment.data, 'base64').toString('utf-8');
+                  processedDoc.decodedContent.push({
+                    contentType: attachment.contentType,
+                    title: attachment.title,
+                    decodedData: decodedData
+                  });
+                } catch (error) {
+                  processedDoc.decodedContent.push({
+                    contentType: attachment.contentType,
+                    title: attachment.title,
+                    error: 'Failed to decode base64 data'
+                  });
+                }
+              } else if (attachment?.url) {
+                // Reference to Binary resource
+                const binaryId = attachment.url.split('/').pop();
+                if (binaryId && attachment.url.includes('Binary/')) {
+                  try {
+                    const binaryResponse = await this.client.get(`/Binary/${binaryId}`);
+                    let decodedData = binaryResponse.data;
+                    
+                    // If the binary data is base64 encoded, decode it
+                    if (typeof decodedData === 'string' && attachment.contentType?.includes('text')) {
+                      try {
+                        decodedData = Buffer.from(decodedData, 'base64').toString('utf-8');
+                      } catch {
+                        // If decoding fails, keep original data
+                      }
+                    }
+                    
+                    processedDoc.decodedContent.push({
+                      contentType: attachment.contentType,
+                      title: attachment.title,
+                      url: attachment.url,
+                      decodedData: decodedData
+                    });
+                  } catch (error) {
+                    processedDoc.decodedContent.push({
+                      contentType: attachment.contentType,
+                      title: attachment.title,
+                      url: attachment.url,
+                      error: `Failed to fetch Binary resource: ${error}`
+                    });
+                  }
+                }
+              }
+            }
+          }
+          
+          return processedDoc;
+        })
+      );
+      
+      return this.formatResponse(`fhir://Patient/${args.patientId}/documents`, {
+        ...response.data,
+        entry: documentsWithContent.map(doc => ({ resource: doc }))
+      });
+    }
+    
+    return this.formatResponse(`fhir://Patient/${args.patientId}/documents`, response.data);
+  }
+
+  async getBinaryResource(args: any) {
+    const response = await this.client.get(`/Binary/${args.binaryId}`);
+    
+    let processedData = response.data;
+    
+    // Attempt to decode if it appears to be base64 encoded text
+    if (typeof response.data === 'string') {
+      try {
+        // Check if it's base64 by trying to decode it
+        const decoded = Buffer.from(response.data, 'base64').toString('utf-8');
+        // If successful and contains readable text, include both versions
+        processedData = {
+          originalData: response.data,
+          decodedData: decoded,
+          encoding: 'base64'
+        };
+      } catch (error) {
+        // If decoding fails, keep original data
+        processedData = {
+          originalData: response.data,
+          note: 'Data may be binary or not base64 encoded'
+        };
+      }
+    }
+    
+    return this.formatResponse(`fhir://Binary/${args.binaryId}`, processedData);
+  }
+
   async getVitalSigns(patientId: string, timeframe?: string) {
     const parms: Record<string, string> = {
       patient: patientId,

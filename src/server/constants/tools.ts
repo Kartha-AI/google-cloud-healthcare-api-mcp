@@ -230,5 +230,35 @@ export const TOOL_DEFINITIONS = [
       },
       required: ['genericName']
     }
+  },
+  {
+    name: "get_patient_documents",
+    description: "Get document references for a patient",
+    inputSchema: {
+      type: "object",
+      properties: {
+        patientId: { type: "string" },
+        type: { type: "string", description: "Document type code" },
+        category: { type: "string", description: "Document category" },
+        status: { 
+          type: "string",
+          enum: ["current", "superseded", "entered-in-error"]
+        },
+        dateFrom: { type: "string", description: "YYYY-MM-DD" },
+        dateTo: { type: "string", description: "YYYY-MM-DD" }
+      },
+      required: ["patientId"]
+    }
+  },
+  {
+    name: "get_binary_resource",
+    description: "Get binary resource by ID",
+    inputSchema: {
+      type: "object",
+      properties: {
+        binaryId: { type: "string" }
+      },
+      required: ["binaryId"]
+    }
   }
 ]; 
